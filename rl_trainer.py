@@ -13,18 +13,17 @@ class RLTrainer:
 		ray.init()
 		assert ray.is_initialized()
 
-		# Register the custom environment with Ray
 		register_env("custom_env", lambda config: Environment(digital_twin_path))
 
 		self.trainer_config = {
 			"env": "custom_env",
-			"framework": "tf",  # or "torch" for PyTorch
-			"num_workers": 2,
+			"framework": "tf",
+			"num_workers": 1,
 			"num_gpus": 0,
 			"num_cpus_per_worker": 1,
 		}
 
-	def train(self, train_steps=100):
+	def train(self, train_steps=10):
 		self.trainer = DQN(config=self.trainer_config)
 
 		# Train the DQN agent for a number of iterations

@@ -5,7 +5,7 @@ import pandas as pd
 import random
 from ray.rllib.utils.framework import try_import_tf
 tf1, tf, tfv = try_import_tf()
-tf.compat.v1.enable_eager_execution()
+tf.compat.v1.disable_eager_execution()
 # from tensorflow.keras.models import load_model
 
 class Environment(gymnasium.Env):

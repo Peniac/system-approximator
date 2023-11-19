@@ -6,9 +6,6 @@ from sklearn.preprocessing import StandardScaler
 from ray.rllib.utils.framework import try_import_tf
 tf1, tf, tfv = try_import_tf()
 
-# from tensorflow import keras
-# from tensorflow.keras import layers
-
 
 class DigitalTwin:
 	def __init__(self, data: pd.DataFrame):

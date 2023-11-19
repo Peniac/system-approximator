@@ -1,28 +1,22 @@
-from system import System
-from digital_twin import DigitalTwin
-from rl_trainer import RLTrainer
-
 import numpy as np
 import pandas as pd
 import random
 
+from system import System
+from digital_twin import DigitalTwin
+from rl_trainer import RLTrainer
+
 if __name__ == "__main__":
+
+	# Collect data from a running system.
 	system = System()
-
 	system.run(iters=1000)
-
 	system_data = system.database.copy(deep=True)
-	dt = DigitalTwin(data=system_data)
-	dt.train_model(nb_epochs=10)
 
+	# Train a digital twin model to approximate the system's input-reaction-output' behavior.
+	dtwin = DigitalTwin(data=system_data)
+	dtwin.train_model(nb_epochs=50)
+
+	# Train an RL agent using the digital twin of the system. 
 	trainer = RLTrainer(digital_twin_path='digital_twin.h5')
-	trainer.train()
-	
-
-	# for _ in range(10):
-	# 	data_to_predict = pd.DataFrame({'input': [system._get_input()], 'reaction': [system._react()]})
-	# 	prediction = dt.predict(new_data=data_to_predict)
-	# 	print(f'Data: {data_to_predict} \n Prediction: {prediction} \n\n')
-
-	
-		
+	trainer.train(nb_train_steps=2)		

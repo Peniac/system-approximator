@@ -5,8 +5,8 @@ import pandas as pd
 import random
 from ray.rllib.utils.framework import try_import_tf
 tf1, tf, tfv = try_import_tf()
+# Disable eager execution to avoid issues with digital twin inference. 
 tf.compat.v1.disable_eager_execution()
-# from tensorflow.keras.models import load_model
 
 class Environment(gymnasium.Env):
 	def __init__(self, digital_twin_path: str):
@@ -24,14 +24,16 @@ class Environment(gymnasium.Env):
 		return self.observation, info
 
 	def step(self, action):
-
 		reward = self.compute_reward(self.observation, action)
 
 		terminated = True
 		truncated = False
 		info = {}
 
-		new_record = pd.DataFrame({"input": [self.observation], "action": [action], "reward": [reward]})
+		new_record = pd.DataFrame({"input": [self.observation], 
+							 "action": [action], 
+							 "reward": [reward]}
+							 )
 		self.learning_history = pd.concat([self.learning_history, new_record], ignore_index=True)
 
 		return self.observation, reward, terminated, truncated, info
@@ -47,7 +49,6 @@ class Environment(gymnasium.Env):
 	def compute_reward(self, obs, action):
 		data_to_predict = pd.DataFrame({'input': [obs[0]], 'reaction': [action]})
 		prediction = self.dtwin.predict(data_to_predict)[0][0]
-		if prediction < 1:
-			return -1 
-		else:
-			return prediction - action 
+		reward = 1.5 - abs(prediction - 1.5)
+		
+		return reward
